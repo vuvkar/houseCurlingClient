@@ -49,6 +49,7 @@ public class HouseCurling extends ApplicationAdapter { ;
 
 		textureRenderingSystem.drawBackground();
 		engine.update(Gdx.graphics.getDeltaTime());
+		textureRenderingSystem.drawHouses();
 	}
 	
 	@Override

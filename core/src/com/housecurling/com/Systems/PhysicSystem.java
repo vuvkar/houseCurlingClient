@@ -58,11 +58,11 @@ public class PhysicSystem extends IteratingSystem {
         debugRenderer.render(world, houseCurling.camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setProjectionMatrix(houseCurling.camera.combined);
-        shapeRenderer.setColor(Color.WHITE);
+        shapeRenderer.setColor(0.7f, 0.5f, 0, 0.8f);
         shapeRenderer.circle(0, 0, radius, 100);
 
         shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(1f, 1f, 1f, 0.3f);
+        shapeRenderer.setColor(1f, 0.9f, 0f, 0.2f);
         shapeRenderer.circle(0, 0, radius, 100);
         shapeRenderer.end();
 
