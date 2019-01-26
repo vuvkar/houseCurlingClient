@@ -44,6 +44,7 @@ public class TextureRenderingSystem {
         for(Body body: houses) {
             batch.draw(house, body.getPosition().x - Constants.HOUSE_SIZE / 2, body.getPosition().y - Constants.HOUSE_SIZE / 2, 0, 0, house.getWidth(), house.getHeight(), scl2, scl2, 0);
         }
+
         batch.end();
     }
 
