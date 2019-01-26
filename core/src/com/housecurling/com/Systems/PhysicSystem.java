@@ -3,6 +3,8 @@ package com.housecurling.com.Systems;
 import com.badlogic.ashley.core.*;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -23,34 +25,33 @@ public class PhysicSystem extends IteratingSystem {
 
     World world;
     Box2DDebugRenderer debugRenderer;
+    ShapeRenderer shapeRenderer;
     Rectangle rectangle;
 
     BotsSystem botsSystem;
 
     Array<Body> houses;
+    float radius = Constants.CIRCLE_INITIAL_RADIUS;
 
     int countStep = 0;
-
-    //private Entity circle;
 
     @Override
     public void addedToEngine(Engine engine) {
         super.addedToEngine(engine);
         createWorld();
-        ImmutableArray<Entity> circleEntities = engine.getEntitiesFor(Family.all(RadiusComponent.class).get());
-
-//        if(circleEntities.size() != 1) {
-//            throw new GdxRuntimeException("Current circles can't be more or less then one");
-//        }
-
-//        circle = circleEntities.first();
     }
 
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
         world.step(1/60f, 10, 5);
+        checkForPlaces();
         debugRenderer.render(world, houseCurling.renderingSystem.camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setProjectionMatrix(houseCurling.renderingSystem.camera.combined);
+        shapeRenderer.setColor(Color.BLUE);
+        shapeRenderer.circle(0, 0, Constants.CIRCLE_INITIAL_RADIUS, 100);
+        shapeRenderer.end();
         if(countStep < Constants.BOT_SYSTEM_FRAMESTEP) {
             botsSystem.botsAction();
         } else {
@@ -58,27 +59,35 @@ public class PhysicSystem extends IteratingSystem {
         }
     }
 
+    private void checkForPlaces() {
+        for(Body house: houses) {
+            Vector2 position = house.getWorldCenter();
+            if(Math.pow(position.x, 2) + Math.pow(position.y, 2) > radius) {
+                deleteHouse(house);
+            }
+        }
+    }
+
+    private void deleteHouse(Body house) {
+        world.destroyBody(house);
+        botsSystem.removeBot(house);
+        this.houses.removeValue(house, true);
+        changeRadius();
+    }
+
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-//        if(entity instanceof GameEntity) {
-//            GameObject type = ((GameEntity) entity).getType();
-//            if(type.equals(GameObject.HOUSE)) {
-//                actHouse((GameEntity) entity);
-//            }
-//        }
     }
 
     public void wasDragged(Vector2 initialPosition, Vector2 finalPosition) {
         Vector2 vector2 = new Vector2(initialPosition);
         for(Body body: houses) {
-            System.out.println("body position " + body.getPosition() + "  :::  " + initialPosition);
             if(doesCollide(vector2, body)) {
                 initialPosition.sub(finalPosition);
                 applyImpulse(body, initialPosition);
                 break;
             }
         }
-        System.out.println("   :::::::::::     ");
     }
 
     private boolean doesCollide(Vector2 initialPosition, Body body) {
@@ -109,6 +118,11 @@ public class PhysicSystem extends IteratingSystem {
         polygonShape.dispose();
     }
 
+    private void changeRadius() {
+        float delta = Constants.HOUSE_COUNT / Constants.CIRCLE_INITIAL_RADIUS;
+        //radius -= delta;
+    }
+
     private Vector2[] createCirclePoints( int n , float r , Vector2 centerCoordinate) {
         Vector2[] vertexes = new Vector2[n];
         double coef = 1;
@@ -136,15 +150,9 @@ public class PhysicSystem extends IteratingSystem {
 
             FixtureDef fixtureDef = new FixtureDef();
             fixtureDef.shape = polygonShape;
-            fixtureDef.density = 0.0f;
-            fixtureDef.friction = 0.0f;
-            fixtureDef.restitution = 0.0f;
 
             body.createFixture(fixtureDef);
             body.setLinearDamping(1);
-            body.setFixedRotation(true);
-            body.setGravityScale(0);
-            body.setBullet(true);
 
             polygonShape.dispose();
 
@@ -166,9 +174,10 @@ public class PhysicSystem extends IteratingSystem {
     private void createWorld() {
         world = new World(new Vector2(0, 0), false);
         debugRenderer = new Box2DDebugRenderer();
+        shapeRenderer = new ShapeRenderer();
         rectangle = new Rectangle();
         botsSystem = new BotsSystem(this);
-        createCircle(100, Constants.CIRCLE_INITIAL_RADIUS, new Vector2());
+        //createCircle(100, Constants.CIRCLE_INITIAL_RADIUS, new Vector2());
         createHouses();
     }
 

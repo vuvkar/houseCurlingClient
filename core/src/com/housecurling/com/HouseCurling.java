@@ -20,7 +20,6 @@ public class HouseCurling extends ApplicationAdapter { ;
 
 	@Override
 	public void create () {
-		//curlingNetwork = new CurlingNetwork();
 		engine = new Engine();
 		physicSystem = new PhysicSystem(this);
 		engine.addSystem(physicSystem);

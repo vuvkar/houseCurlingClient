@@ -44,12 +44,7 @@ public class BotsSystem {
     void botsAction() {
         for(BotHouse botHouse : bots) {
             temp.clear();
-            try {
-                System.arraycopy(temp, 0, bots, 0, bots.size);
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
+            temp.addAll(bots);
             temp.removeValue(botHouse, true);
             botHouse.setEnemyRNorms(temp);
         }
@@ -63,6 +58,10 @@ public class BotsSystem {
     public void addBot(Body bot) {
         BotHouse botHouse = new BotHouse(bot);
         bots.add(botHouse);
+    }
+
+    public void removeBot(Body bot) {
+
     }
 
 }
