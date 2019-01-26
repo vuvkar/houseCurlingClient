@@ -26,7 +26,7 @@ public class PhysicSystem extends IteratingSystem {
     World world;
     Box2DDebugRenderer debugRenderer;
 
-    Array<Entity> houses;
+    Array<Body> houses;
 
     //private Entity circle;
 
@@ -60,19 +60,26 @@ public class PhysicSystem extends IteratingSystem {
 //        }
     }
 
-    public void createCircle(int lineNumber) {
+    public void wasDragged(Vector2 initialPosition, Vector2 finalPosition) {
+        for(Body body: houses) {
+            if(body.getFixtureList().first().testPoint(initialPosition)) {
+                initialPosition.sub(finalPosition);
+                applyImpulse(body, initialPosition);
+                break;
+            }
+        }
+    }
+
+    public void createCircle(int lineNumber, int radius, Vector2 centerCoordinate) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
-        bodyDef.position.set(0, 0);
+        bodyDef.position.set(-radius, -radius);
 
         Body body = world.createBody(bodyDef);
 
-       // PolygonRegion =
+        ChainShape polygonShape = new ChainShape();
 
-        PolygonShape polygonShape = new PolygonShape();
-        
-
-        polygonShape.set( createCirclePoints( lineNumber , 50 ) );
+        polygonShape.createLoop( createCirclePoints( lineNumber , radius, centerCoordinate) );
         polygonShape.setRadius(50);
 
         FixtureDef fixtureDef = new FixtureDef();
@@ -86,7 +93,7 @@ public class PhysicSystem extends IteratingSystem {
         polygonShape.dispose();
     }
 
-    private Vector2[] createCirclePoints( int n , int r ) {
+    private Vector2[] createCirclePoints( int n , int r , Vector2 centerCoordinate) {
         Vector2[] vertexes = new Vector2[n];
         double coef = 1;
         for ( int i=0; i < n ; i++ )
@@ -94,8 +101,8 @@ public class PhysicSystem extends IteratingSystem {
             double radian = coef * Math.PI * 2;
             double x = r + Math.cos(radian) * r;
             double y = r + Math.sin(radian) * r;
-            vertexes[i] = new Vector2( x , y );
-            coef -= 1/n;
+            vertexes[i] = new Vector2((float)x ,(float)y);
+            coef -= 1f/n;
         }
         return vertexes;
     }
@@ -115,29 +122,30 @@ public class PhysicSystem extends IteratingSystem {
             fixtureDef.shape = polygonShape;
             fixtureDef.density = 0.5f;
             fixtureDef.friction = 0.4f;
-            fixtureDef.restitution = 0.6f; // Make it bounce a little bit
 
-            Fixture fixture = body.createFixture(fixtureDef);
+            body.createFixture(fixtureDef);
 
             polygonShape.dispose();
 
-           // this.houses.add(house);
+            this.houses.add(body);
         }
     }
 
-    public void wasDragged(Fixture body, VelocityComponent velocityComponent, PositionComponent positionComponent) {
+    public void applyImpulse(Body body, Vector2 dir) {
+        dir.scl(3000);
+        body.applyLinearImpulse(dir, body.getWorldCenter(), true);
     }
 
     public PhysicSystem(HouseCurling houseCurling){
         super(Family.all(PositionComponent.class, VelocityComponent.class).get());
         this.houseCurling = houseCurling;
-        this.houses = new Array<Entity>();
+        this.houses = new Array<Body>();
     }
 
     private void createWorld() {
-        world = new World(new Vector2(0, 0), true);
+        world = new World(new Vector2(0, 0), false);
         debugRenderer = new Box2DDebugRenderer();
-        //createCircle(10);
+        createCircle(100, 500, new Vector2());
         createHouses();
     }
 

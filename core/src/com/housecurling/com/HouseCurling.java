@@ -17,18 +17,17 @@ public class HouseCurling extends ApplicationAdapter { ;
 	public ShapeRenderingSystem renderingSystem;
 	public PhysicSystem physicSystem;
 	public InputSystem inputSystem;
-	//CurlingNetwork curlingNetwork;
 
 	@Override
 	public void create () {
 		//curlingNetwork = new CurlingNetwork();
-		inputSystem = new InputSystem();
-		Gdx.input.setInputProcessor(inputSystem);
 		engine = new Engine();
 		physicSystem = new PhysicSystem(this);
 		engine.addSystem(physicSystem);
 		renderingSystem = new ShapeRenderingSystem(this);
 		engine.addSystem(renderingSystem);
+		inputSystem = new InputSystem(this);
+		Gdx.input.setInputProcessor(inputSystem);
 	}
 
 	@Override
