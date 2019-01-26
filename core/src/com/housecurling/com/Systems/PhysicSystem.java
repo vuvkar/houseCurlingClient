@@ -32,6 +32,8 @@ public class PhysicSystem extends IteratingSystem {
 
     BotsSystem botsSystem;
 
+    Body userHouse;
+
     Array<Body> houses;
     float radius = Constants.CIRCLE_INITIAL_RADIUS;
 
@@ -95,12 +97,9 @@ public class PhysicSystem extends IteratingSystem {
 
     public void wasDragged(Vector2 initialPosition, Vector2 finalPosition) {
         Vector2 vector2 = new Vector2(initialPosition);
-        for(Body body: houses) {
-            if(doesCollide(vector2, body)) {
-                initialPosition.sub(finalPosition);
-                applyImpulse(body, initialPosition);
-                break;
-            }
+        if(doesCollide(vector2, userHouse)) {
+            initialPosition.sub(finalPosition);
+            applyImpulse(userHouse, initialPosition);
         }
     }
 
@@ -179,6 +178,7 @@ public class PhysicSystem extends IteratingSystem {
             botsSystem.addBot(body);
             this.houses.add(body);
         }
+        userHouse = houses.get(0);
     }
 
     public void applyImpulse(Body body, Vector2 dir) {
