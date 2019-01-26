@@ -3,20 +3,17 @@ package com.housecurling.com.Systems;
 import com.badlogic.ashley.core.*;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
-import com.badlogic.gdx.graphics.g2d.PolygonRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.housecurling.com.Components.*;
 import com.housecurling.com.Constants;
-import com.housecurling.com.Entities.GameEntity;
-import com.housecurling.com.Enums.GameObject;
-import com.housecurling.com.Enums.GameShape;
 import com.housecurling.com.HouseCurling;
 import java.lang.*;
+
+import static com.housecurling.com.Constants.HOUSE_SIZE;
 
 public class PhysicSystem extends IteratingSystem {
     private final HouseCurling houseCurling;
@@ -28,7 +25,11 @@ public class PhysicSystem extends IteratingSystem {
     Box2DDebugRenderer debugRenderer;
     Rectangle rectangle;
 
+    BotsSystem botsSystem;
+
     Array<Body> houses;
+
+    int countStep = 0;
 
     //private Entity circle;
 
@@ -50,6 +51,11 @@ public class PhysicSystem extends IteratingSystem {
         super.update(deltaTime);
         world.step(1/60f, 10, 5);
         debugRenderer.render(world, houseCurling.renderingSystem.camera.combined);
+        if(countStep < Constants.BOT_SYSTEM_FRAMESTEP) {
+            botsSystem.botsAction();
+        } else {
+            countStep = 0;
+        }
     }
 
     @Override
@@ -66,7 +72,7 @@ public class PhysicSystem extends IteratingSystem {
         Vector2 vector2 = new Vector2(initialPosition);
         for(Body body: houses) {
             System.out.println("body position " + body.getPosition() + "  :::  " + initialPosition);
-            if(body.getFixtureList().first().testPoint(vector2)) {
+            if(doesCollide(vector2, body)) {
                 initialPosition.sub(finalPosition);
                 applyImpulse(body, initialPosition);
                 break;
@@ -76,11 +82,12 @@ public class PhysicSystem extends IteratingSystem {
     }
 
     private boolean doesCollide(Vector2 initialPosition, Body body) {
-        rectangle.set(body.getPosition().x, body.getPosition().y, 50, 50);
+        rectangle.set(body.getPosition().x, body.getPosition().y, HOUSE_SIZE, HOUSE_SIZE);
+        rectangle.setCenter(initialPosition);
         return rectangle.contains(initialPosition);
     }
 
-    public void createCircle(int lineNumber, int radius, Vector2 centerCoordinate) {
+    public void createCircle(int lineNumber, float radius, Vector2 centerCoordinate) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
         bodyDef.position.set(-radius, -radius);
@@ -90,7 +97,6 @@ public class PhysicSystem extends IteratingSystem {
         ChainShape polygonShape = new ChainShape();
 
         polygonShape.createLoop( createCirclePoints( lineNumber , radius, centerCoordinate) );
-        polygonShape.setRadius(50);
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = polygonShape;
@@ -103,7 +109,7 @@ public class PhysicSystem extends IteratingSystem {
         polygonShape.dispose();
     }
 
-    private Vector2[] createCirclePoints( int n , int r , Vector2 centerCoordinate) {
+    private Vector2[] createCirclePoints( int n , float r , Vector2 centerCoordinate) {
         Vector2[] vertexes = new Vector2[n];
         double coef = 1;
         for ( int i=0; i < n ; i++ )
@@ -121,12 +127,12 @@ public class PhysicSystem extends IteratingSystem {
         for(int i = 0; i < Constants.HOUSE_COUNT; i++) {
             BodyDef bodyDef = new BodyDef();
             bodyDef.type = BodyDef.BodyType.DynamicBody;
-            bodyDef.position.set(MathUtils.random(-2, 2), MathUtils.random(- 2, 6));
+            bodyDef.position.set(MathUtils.random(-3 * HOUSE_SIZE, 3 * HOUSE_SIZE), MathUtils.random(-3 * HOUSE_SIZE, 3 * HOUSE_SIZE));
 
             Body body = world.createBody(bodyDef);
 
             PolygonShape polygonShape = new PolygonShape();
-            polygonShape.setAsBox(0.5f, 0.5f);
+            polygonShape.setAsBox(HOUSE_SIZE / 2, HOUSE_SIZE / 2);
 
             FixtureDef fixtureDef = new FixtureDef();
             fixtureDef.shape = polygonShape;
@@ -142,6 +148,7 @@ public class PhysicSystem extends IteratingSystem {
 
             polygonShape.dispose();
 
+            //botsSystem.addBot(body);
             this.houses.add(body);
         }
     }
@@ -159,7 +166,9 @@ public class PhysicSystem extends IteratingSystem {
     private void createWorld() {
         world = new World(new Vector2(0, 0), false);
         debugRenderer = new Box2DDebugRenderer();
-        createCircle(100, 8, new Vector2());
+        rectangle = new Rectangle();
+        botsSystem = new BotsSystem(this);
+        createCircle(100, Constants.CIRCLE_INITIAL_RADIUS, new Vector2());
         createHouses();
     }
 
