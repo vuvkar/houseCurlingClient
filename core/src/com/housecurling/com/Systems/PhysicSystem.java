@@ -55,7 +55,7 @@ public class PhysicSystem extends IteratingSystem {
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl20.glLineWidth(5);
 
-        debugRenderer.render(world, houseCurling.camera.combined);
+        //debugRenderer.render(world, houseCurling.camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setProjectionMatrix(houseCurling.camera.combined);
         shapeRenderer.setColor(0.7f, 0.5f, 0, 0.8f);
@@ -165,14 +165,17 @@ public class PhysicSystem extends IteratingSystem {
 
             Body body = world.createBody(bodyDef);
 
+
             PolygonShape polygonShape = new PolygonShape();
             polygonShape.setAsBox(HOUSE_SIZE / 2, HOUSE_SIZE / 2);
 
             FixtureDef fixtureDef = new FixtureDef();
             fixtureDef.shape = polygonShape;
+            fixtureDef.density = 8f;
 
             body.createFixture(fixtureDef);
-            body.setLinearDamping(1);
+            body.setLinearDamping(1f);
+
 
             polygonShape.dispose();
 

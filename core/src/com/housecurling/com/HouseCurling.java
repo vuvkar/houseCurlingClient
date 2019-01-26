@@ -32,6 +32,8 @@ public class HouseCurling extends ApplicationAdapter { ;
 		this.camera = new OrthographicCamera(Constants.WORLD_WIDTH, Constants.WORLD_WIDTH * aspect);
 		this.batch = new SpriteBatch();
 
+		batch.setProjectionMatrix(camera.combined);
+
 		engine = new Engine();
 		physicSystem = new PhysicSystem(this);
 		engine.addSystem(physicSystem);

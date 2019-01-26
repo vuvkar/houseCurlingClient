@@ -31,7 +31,7 @@ public class TextureRenderingSystem {
 
     public void drawBackground() {
         batch.begin();
-        batch.draw(background, 0, 0, background.getWidth() / 2, background.getHeight() / 2,  Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), Constants.UI_SCALE, Constants.UI_SCALE,0);
+        batch.draw(background, -camera.viewportWidth / 2, -camera.viewportHeight / 2, background.getWidth() / 2, background.getHeight() / 2, camera.viewportWidth, camera.viewportHeight, 1, 1, 0);
         batch.end();
     }
 
@@ -39,8 +39,10 @@ public class TextureRenderingSystem {
         batch.begin();
         Array<Body> houses = houseCurling.physicSystem.houses;
 
+        float scl2 = Constants.UI_SCALE * camera.viewportWidth /Constants.SCREEN_WIDTH;
+
         for(Body body: houses) {
-            batch.draw(house, body.getPosition().x, body.getPosition().y);
+            batch.draw(house, body.getPosition().x - Constants.HOUSE_SIZE / 2, body.getPosition().y - Constants.HOUSE_SIZE / 2, 0, 0, house.getWidth(), house.getHeight(), scl2, scl2, 0);
         }
         batch.end();
     }
