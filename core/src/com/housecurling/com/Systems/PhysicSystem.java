@@ -145,7 +145,7 @@ public class PhysicSystem extends IteratingSystem {
             float randy = MathUtils.random(-3 * HOUSE_SIZE, 3 * HOUSE_SIZE);
             for ( int j =0; j < i; j++ )
             {
-                if ( randx == houses[i].getPosition().x && randy == houses[i].getPosition().y )
+                if ( randx == houses.get(j).getPosition().x && randy == houses.get(j).getPosition().y )
                 {
                     randx = MathUtils.random(-3 * HOUSE_SIZE, 3 * HOUSE_SIZE);
                     randy = MathUtils.random(-3 * HOUSE_SIZE, 3 * HOUSE_SIZE);
@@ -173,11 +173,34 @@ public class PhysicSystem extends IteratingSystem {
     }
 
     public void applyImpulse(Body body, Vector2 dir) {
-        if ( Vector2.Distance( dir , body.getWorldCenter() ) >  MAX_VECTOR_LENGTH )
+        if ( dir.dst( body.getWorldCenter() ) > Constants.MAX_VECTOR_LENGTH )
         {
-            
+            double k1 ,k2;
+            Vector2 temp = body.getWorldCenter();
+            k1 = ((2 * dir.x * temp.x -2 * dir.y * temp.y) + Math.sqrt( Math.pow(2 * dir.x * temp.x + 2 * dir.y * temp.y , 2) - 
+                 4 * (Math.pow( temp.x , 2 )) + Math.pow( dir.y , 2 )) * (Math.pow( dir.x , 2 ) + Math.pow( temp.y ,2) - Math.pow( temp.x , 2 )))
+                 /2 * (Math.pow( temp.x , 2 ) + Math.pow( dir.y , 2 )) * (Math.pow( dir.x , 2 ) + Math.pow( temp.y ,2) - Math.pow( temp.x , 2 ));
+
+            k2 = ((2 * dir.x * temp.x -2 * dir.y * temp.y) - Math.sqrt( Math.pow(2 * dir.x * temp.x + 2 * dir.y * temp.y , 2) - 
+                 4 * (Math.pow( temp.x , 2 )) + Math.pow( dir.y , 2 )) * (Math.pow( dir.x , 2 ) + Math.pow( temp.y ,2) - Math.pow( temp.x , 2 )))
+                 /2 * (Math.pow( temp.x , 2 ) + Math.pow( dir.y , 2 )) * (Math.pow( dir.x , 2 ) + Math.pow( temp.y ,2) - Math.pow( temp.x , 2 )); 
+
+            if ( k1 > 0 )
+            {
+                temp.x = (int)(k1 * temp.x);
+                temp.y = (int)(k1 * temp.y);
+            }
+            else
+            {
+                temp.x = (int)(k2 * temp.x);
+                temp.y = (int)(k2 * temp.y);
+            }  
+            body.applyLinearImpulse( dir, temp , true);   
         }
-        body.applyLinearImpulse( dir, body.getWorldCenter(), true);
+        else
+        {
+            body.applyLinearImpulse( dir, body.getWorldCenter(), true);
+        }
     }
 
     public PhysicSystem(HouseCurling houseCurling){
