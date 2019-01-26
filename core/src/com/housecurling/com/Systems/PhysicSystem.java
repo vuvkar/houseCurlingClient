@@ -150,7 +150,18 @@ public class PhysicSystem extends IteratingSystem {
         for(int i = 0; i < Constants.HOUSE_COUNT; i++) {
             BodyDef bodyDef = new BodyDef();
             bodyDef.type = BodyDef.BodyType.DynamicBody;
-            bodyDef.position.set(MathUtils.random(-3 * HOUSE_SIZE, 3 * HOUSE_SIZE), MathUtils.random(-3 * HOUSE_SIZE, 3 * HOUSE_SIZE));
+            float randx = MathUtils.random(-3 * HOUSE_SIZE, 3 * HOUSE_SIZE);
+            float randy = MathUtils.random(-3 * HOUSE_SIZE, 3 * HOUSE_SIZE);
+            for ( int j =0; j < i; j++ )
+            {
+                if ( randx == houses[i].getPosition().x && randy == houses[i].getPosition().y )
+                {
+                    randx = MathUtils.random(-3 * HOUSE_SIZE, 3 * HOUSE_SIZE);
+                    randy = MathUtils.random(-3 * HOUSE_SIZE, 3 * HOUSE_SIZE);
+                    j--;
+                }
+            }
+            bodyDef.position.set( randx , randy );
 
             Body body = world.createBody(bodyDef);
 
@@ -165,13 +176,17 @@ public class PhysicSystem extends IteratingSystem {
 
             polygonShape.dispose();
 
-            //botsSystem.addBot(body);
+            botsSystem.addBot(body);
             this.houses.add(body);
         }
     }
 
     public void applyImpulse(Body body, Vector2 dir) {
-        body.applyLinearImpulse(dir, body.getWorldCenter(), true);
+        if ( Vector2.Distance( dir , body.getWorldCenter() ) >  MAX_VECTOR_LENGTH )
+        {
+            
+        }
+        body.applyLinearImpulse( dir, body.getWorldCenter(), true);
     }
 
     public PhysicSystem(HouseCurling houseCurling){
