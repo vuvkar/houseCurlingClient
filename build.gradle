@@ -6,6 +6,7 @@ buildscript {
         mavenCentral()
         maven { url "https://plugins.gradle.org/m2/" }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+
         jcenter()
         google()
     }
@@ -95,7 +96,10 @@ project(":core") {
         compile "com.badlogicgames.ashley:ashley:$ashleyVersion"
         compile "com.badlogicgames.gdx:gdx-ai:$aiVersion"
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
-        
+        compile ('io.socket:socket.io-client:1.0.0') {
+            // excluding org.json which is provided by Android
+            exclude group: 'org.json', module: 'json'
+        }
     }
 }
 

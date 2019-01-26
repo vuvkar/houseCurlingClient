@@ -4,6 +4,9 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.housecurling.com.Network.CurlingNetwork;
+import com.housecurling.com.Systems.InputSystem;
 import com.housecurling.com.Systems.PhysicSystem;
 import com.housecurling.com.Systems.ShapeRenderingSystem;
 
@@ -11,11 +14,16 @@ public class HouseCurling extends ApplicationAdapter { ;
 
 	Engine engine;
 
-	ShapeRenderingSystem renderingSystem;
-	PhysicSystem physicSystem;
+	public ShapeRenderingSystem renderingSystem;
+	public PhysicSystem physicSystem;
+	public InputSystem inputSystem;
+	//CurlingNetwork curlingNetwork;
 
 	@Override
 	public void create () {
+		//curlingNetwork = new CurlingNetwork();
+		inputSystem = new InputSystem();
+		Gdx.input.setInputProcessor(inputSystem);
 		engine = new Engine();
 		physicSystem = new PhysicSystem(this);
 		engine.addSystem(physicSystem);

@@ -32,19 +32,20 @@ public class ShapeRenderingSystem extends IteratingSystem {
         super(Family.all(PositionComponent.class, ShapeComponent.class).get());
         this.houseCurling = houseCurling;
         this.batch = new SpriteBatch();
-        this.camera = new PerspectiveCamera();
+        float aspect = Gdx.graphics.getWidth() / Gdx.graphics.getHeight();
+
+        this.camera = new OrthographicCamera(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT * aspect);
         this.shapeRenderer = new ShapeRenderer();
 
-        camera = new OrthographicCamera(1900 ,600);
         camera.position.set(0,0,0);
     }
 
     @Override
     public void update(float deltaTime) {
         camera.update();
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+       // shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         super.update(deltaTime);
-        shapeRenderer.end();
+       // shapeRenderer.end();
     }
 
     public void dispose() {
@@ -53,22 +54,22 @@ public class ShapeRenderingSystem extends IteratingSystem {
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-        if(entity instanceof GameEntity) {
-            //if(((GameEntity) entity).getType().equals(GameObject.HOUSE)) {
-                ShapeComponent shapeComponent = shm.get(entity);
-                PositionComponent positionComponent = pm.get(entity);
-
-                switch (shapeComponent.getGameShape()) {
-                    case CIRCLE:
-                        RadiusComponent radiusComponent = rm.get(entity);
-                        shapeRenderer.circle(positionComponent.getX(), positionComponent.getY(), radiusComponent.getRadius(), 100);
-                        break;
-                    case SQUARE:
-                        SizeComponent sizeComponent = sm.get(entity);
-                        shapeRenderer.rect(positionComponent.getX(), positionComponent.getY(), sizeComponent.getWidth(), sizeComponent.getHeight());
-                        break;
-               // }
-            }
-        }
+//        if(entity instanceof GameEntity) {
+//            //if(((GameEntity) entity).getType().equals(GameObject.HOUSE)) {
+//                ShapeComponent shapeComponent = shm.get(entity);
+//                PositionComponent positionComponent = pm.get(entity);
+//
+//                switch (shapeComponent.getGameShape()) {
+//                    case CIRCLE:
+//                        RadiusComponent radiusComponent = rm.get(entity);
+//                        shapeRenderer.circle(positionComponent.getX(), positionComponent.getY(), radiusComponent.getRadius(), 100);
+//                        break;
+//                    case SQUARE:
+//                        SizeComponent sizeComponent = sm.get(entity);
+//                        shapeRenderer.rect(positionComponent.getX(), positionComponent.getY(), sizeComponent.getWidth(), sizeComponent.getHeight());
+//                        break;
+//               // }
+//            }
+//        }
     }
 }

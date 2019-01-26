@@ -3,7 +3,10 @@ package com.housecurling.com.Systems;
 import com.badlogic.ashley.core.*;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.graphics.g2d.PolygonRegion;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.housecurling.com.Components.*;
@@ -19,9 +22,12 @@ public class PhysicSystem extends IteratingSystem {
     private ComponentMapper<VelocityComponent> vm = ComponentMapper.getFor(VelocityComponent.class);
     private ComponentMapper<SizeComponent> sm = ComponentMapper.getFor(SizeComponent.class);
 
+    World world;
+    Box2DDebugRenderer debugRenderer;
+
     Array<Entity> houses;
 
-    private Entity circle;
+    //private Entity circle;
 
     @Override
     public void addedToEngine(Engine engine) {
@@ -29,49 +35,80 @@ public class PhysicSystem extends IteratingSystem {
         createWorld();
         ImmutableArray<Entity> circleEntities = engine.getEntitiesFor(Family.all(RadiusComponent.class).get());
 
-        if(circleEntities.size() != 1) {
-            throw new GdxRuntimeException("Current circles can't be more or less then one");
-        }
+//        if(circleEntities.size() != 1) {
+//            throw new GdxRuntimeException("Current circles can't be more or less then one");
+//        }
 
-        circle = circleEntities.first();
+//        circle = circleEntities.first();
+    }
+
+    @Override
+    public void update(float deltaTime) {
+        super.update(deltaTime);
+        world.step(1/60f, 6, 2);
+        debugRenderer.render(world, houseCurling.renderingSystem.camera.combined);
     }
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-        if(entity instanceof GameEntity) {
-            GameObject type = ((GameEntity) entity).getType();
-            if(type.equals(GameObject.HOUSE)) {
-                actHouse((GameEntity) entity);
-            }
-        }
+//        if(entity instanceof GameEntity) {
+//            GameObject type = ((GameEntity) entity).getType();
+//            if(type.equals(GameObject.HOUSE)) {
+//                actHouse((GameEntity) entity);
+//            }
+//        }
     }
 
-    public void createCircle() {
-        GameEntity circle = new GameEntity(GameObject.CIRCLE);
-        float radius = 400;
-        circle.add(new PositionComponent(Constants.SCREEN_WIDTH / 2f, Constants.SCREEN_HEIGHT / 2f));
-        circle.add(new ShapeComponent(GameShape.CIRCLE));
-        circle.add(new RadiusComponent(radius));
-        getEngine().addEntity(circle);
+    public void createCircle(int lineNumber) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.StaticBody;
+        bodyDef.position.set(0, 0);
 
-        this.circle = circle;
+        Body body = world.createBody(bodyDef);
+
+       // PolygonRegion =
+
+        PolygonShape polygonShape = new PolygonShape();
+       // polygonShape.set();
+        polygonShape.setRadius(50);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = polygonShape;
+        fixtureDef.density = 0.5f;
+        fixtureDef.friction = 0.4f;
+        fixtureDef.restitution = 0.6f; // Make it bounce a little bit
+
+        Fixture fixture = body.createFixture(fixtureDef);
+
+        polygonShape.dispose();
     }
 
     private void createHouses() {
         for(int i = 0; i < Constants.HOUSE_COUNT; i++) {
-            GameEntity house = new GameEntity(GameObject.HOUSE);
-            house.add(new SizeComponent(50, 50));
-            PositionComponent positionComponent = pm.get(circle);
-            house.add(new PositionComponent(MathUtils.random(positionComponent.getX() - 300, positionComponent.getX() + 300), MathUtils.random(positionComponent.getY() - 300, positionComponent.getY() + 300)));
-            house.add(new ShapeComponent(GameShape.SQUARE));
-            getEngine().addEntity(house);
+            BodyDef bodyDef = new BodyDef();
+            bodyDef.type = BodyDef.BodyType.DynamicBody;
+            bodyDef.position.set(MathUtils.random(-300, 300), MathUtils.random(- 300, 300));
 
-            this.houses.add(house);
+            Body body = world.createBody(bodyDef);
+
+            PolygonShape polygonShape = new PolygonShape();
+            polygonShape.setAsBox(25, 25);
+
+            FixtureDef fixtureDef = new FixtureDef();
+            fixtureDef.shape = polygonShape;
+            fixtureDef.density = 0.5f;
+            fixtureDef.friction = 0.4f;
+            fixtureDef.restitution = 0.6f; // Make it bounce a little bit
+
+            Fixture fixture = body.createFixture(fixtureDef);
+
+            polygonShape.dispose();
+
+           // this.houses.add(house);
         }
     }
 
-    private void actHouse(GameEntity house) {
-        //ToDo:: do calculations
+    public void wasDragged(Fixture body, VelocityComponent velocityComponent, PositionComponent positionComponent) {
     }
 
     public PhysicSystem(HouseCurling houseCurling){
@@ -81,7 +118,9 @@ public class PhysicSystem extends IteratingSystem {
     }
 
     private void createWorld() {
-        createCircle();
+        world = new World(new Vector2(0, 0), true);
+        debugRenderer = new Box2DDebugRenderer();
+        //createCircle(10);
         createHouses();
     }
 
