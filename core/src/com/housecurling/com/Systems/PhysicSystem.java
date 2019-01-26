@@ -46,9 +46,9 @@ public class PhysicSystem extends IteratingSystem {
         super.update(deltaTime);
         world.step(1/60f, 10, 5);
         checkForPlaces();
-        debugRenderer.render(world, houseCurling.renderingSystem.camera.combined);
+        debugRenderer.render(world, houseCurling.camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setProjectionMatrix(houseCurling.renderingSystem.camera.combined);
+        shapeRenderer.setProjectionMatrix(houseCurling.camera.combined);
         shapeRenderer.setColor(Color.BLUE);
         shapeRenderer.circle(0, 0, radius, 100);
         shapeRenderer.end();
