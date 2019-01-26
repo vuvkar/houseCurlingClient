@@ -20,8 +20,6 @@ import com.housecurling.com.HouseCurling;
 public class ShapeRenderingSystem extends IteratingSystem {
     HouseCurling houseCurling;
     ShapeRenderer shapeRenderer;
-    SpriteBatch batch;
-    Camera camera;
 
     private ComponentMapper<PositionComponent> pm = ComponentMapper.getFor(PositionComponent.class);
     private ComponentMapper<SizeComponent> sm = ComponentMapper.getFor(SizeComponent.class);
@@ -31,18 +29,11 @@ public class ShapeRenderingSystem extends IteratingSystem {
     public ShapeRenderingSystem(HouseCurling houseCurling) {
         super(Family.all(PositionComponent.class, ShapeComponent.class).get());
         this.houseCurling = houseCurling;
-        this.batch = new SpriteBatch();
-        float aspect = (float) Gdx.graphics.getHeight() / Gdx.graphics.getWidth();
-
-        this.camera = new OrthographicCamera(Constants.WORLD_WIDTH, Constants.WORLD_WIDTH * aspect);
         this.shapeRenderer = new ShapeRenderer();
-
-        camera.position.set(0,0,0);
     }
 
     @Override
     public void update(float deltaTime) {
-        camera.update();
        // shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         super.update(deltaTime);
        // shapeRenderer.end();

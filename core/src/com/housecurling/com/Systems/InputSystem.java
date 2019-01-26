@@ -18,7 +18,7 @@ public class InputSystem extends InputAdapter {
 
     public InputSystem(HouseCurling houseCurling) {
         this.houseCurling = houseCurling;
-        camera = houseCurling.renderingSystem.camera;
+        camera = houseCurling.camera;
     }
 
     @Override
