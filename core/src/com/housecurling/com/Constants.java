@@ -10,6 +10,7 @@ public class Constants {
     public static int WORLD_HEIGHT = 1080;
 
     public static float CIRCLE_INITIAL_RADIUS = 1;
+    public static float GAME_TIMEOUT = 60f;
     public static float HOUSE_SIZE = 0.1f;
 
     public static float MAX_VECTOR_LENGTH = 0.3f;
