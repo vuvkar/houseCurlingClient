@@ -3,7 +3,9 @@ package com.housecurling.com.Systems;
 import com.badlogic.ashley.core.*;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
@@ -46,14 +48,27 @@ public class PhysicSystem extends IteratingSystem {
         super.update(deltaTime);
         world.step(1/60f, 10, 5);
         checkForPlaces();
+        float circleDelta = deltaTime / Constants.GAME_TIMEOUT;
+        radius -= circleDelta;
+
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        Gdx.gl20.glLineWidth(5);
+
         debugRenderer.render(world, houseCurling.camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setProjectionMatrix(houseCurling.camera.combined);
-        shapeRenderer.setColor(Color.BLUE);
+        shapeRenderer.setColor(0.7f, 0.5f, 0, 0.8f);
+        shapeRenderer.circle(0, 0, radius, 100);
+
+        shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(1f, 0.9f, 0f, 0.2f);
         shapeRenderer.circle(0, 0, radius, 100);
         shapeRenderer.end();
+
+        Gdx.gl.glDisable(GL20.GL_BLEND);
         if(countStep < Constants.BOT_SYSTEM_FRAMESTEP) {
-            botsSystem.botsAction();
+           // botsSystem.botsAction();
         } else {
             countStep = 0;
         }
@@ -72,7 +87,6 @@ public class PhysicSystem extends IteratingSystem {
         world.destroyBody(house);
         botsSystem.removeBot(house);
         this.houses.removeValue(house, true);
-        changeRadius();
     }
 
     @Override
@@ -118,11 +132,6 @@ public class PhysicSystem extends IteratingSystem {
         polygonShape.dispose();
     }
 
-    private void changeRadius() {
-        float delta = Constants.CIRCLE_INITIAL_RADIUS / Constants.HOUSE_COUNT;
-        radius -= delta;
-    }
-
     private Vector2[] createCirclePoints( int n , float r , Vector2 centerCoordinate) {
         Vector2[] vertexes = new Vector2[n];
         double coef = 1;
@@ -143,7 +152,7 @@ public class PhysicSystem extends IteratingSystem {
             bodyDef.type = BodyDef.BodyType.DynamicBody;
             float randx = MathUtils.random(-3 * HOUSE_SIZE, 3 * HOUSE_SIZE);
             float randy = MathUtils.random(-3 * HOUSE_SIZE, 3 * HOUSE_SIZE);
-            for ( int j =0; j < i; j++ )
+            for ( int j = 0; j < i; j++ )
             {
                 if ( randx == houses.get(j).getPosition().x && randy == houses.get(j).getPosition().y )
                 {
@@ -167,7 +176,7 @@ public class PhysicSystem extends IteratingSystem {
 
             polygonShape.dispose();
 
-            //botsSystem.addBot(body);
+            botsSystem.addBot(body);
             this.houses.add(body);
         }
     }
@@ -213,6 +222,7 @@ public class PhysicSystem extends IteratingSystem {
         world = new World(new Vector2(0, 0), false);
         debugRenderer = new Box2DDebugRenderer();
         shapeRenderer = new ShapeRenderer();
+        shapeRenderer.setAutoShapeType(true);
         rectangle = new Rectangle();
         botsSystem = new BotsSystem(this);
         //createCircle(100, Constants.CIRCLE_INITIAL_RADIUS, new Vector2());

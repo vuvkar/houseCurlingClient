@@ -46,8 +46,10 @@ public class HouseCurling extends ApplicationAdapter { ;
 	public void render () {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
 		textureRenderingSystem.drawBackground();
 		engine.update(Gdx.graphics.getDeltaTime());
+		textureRenderingSystem.drawHouses();
 	}
 	
 	@Override
