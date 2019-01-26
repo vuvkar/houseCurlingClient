@@ -5,6 +5,7 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.g2d.PolygonRegion;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
@@ -25,6 +26,7 @@ public class PhysicSystem extends IteratingSystem {
 
     World world;
     Box2DDebugRenderer debugRenderer;
+    Rectangle rectangle;
 
     Array<Body> houses;
 
@@ -46,7 +48,7 @@ public class PhysicSystem extends IteratingSystem {
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
-        world.step(1/60f, 6, 2);
+        world.step(1/60f, 10, 5);
         debugRenderer.render(world, houseCurling.renderingSystem.camera.combined);
     }
 
@@ -61,13 +63,21 @@ public class PhysicSystem extends IteratingSystem {
     }
 
     public void wasDragged(Vector2 initialPosition, Vector2 finalPosition) {
+        Vector2 vector2 = new Vector2(initialPosition);
         for(Body body: houses) {
-            if(body.getFixtureList().first().testPoint(initialPosition)) {
+            System.out.println("body position " + body.getPosition() + "  :::  " + initialPosition);
+            if(body.getFixtureList().first().testPoint(vector2)) {
                 initialPosition.sub(finalPosition);
                 applyImpulse(body, initialPosition);
                 break;
             }
         }
+        System.out.println("   :::::::::::     ");
+    }
+
+    private boolean doesCollide(Vector2 initialPosition, Body body) {
+        rectangle.set(body.getPosition().x, body.getPosition().y, 50, 50);
+        return rectangle.contains(initialPosition);
     }
 
     public void createCircle(int lineNumber, int radius, Vector2 centerCoordinate) {
@@ -111,19 +121,24 @@ public class PhysicSystem extends IteratingSystem {
         for(int i = 0; i < Constants.HOUSE_COUNT; i++) {
             BodyDef bodyDef = new BodyDef();
             bodyDef.type = BodyDef.BodyType.DynamicBody;
-            bodyDef.position.set(MathUtils.random(-300, 300), MathUtils.random(- 300, 300));
+            bodyDef.position.set(MathUtils.random(-2, 2), MathUtils.random(- 2, 6));
 
             Body body = world.createBody(bodyDef);
 
             PolygonShape polygonShape = new PolygonShape();
-            polygonShape.setAsBox(25, 25);
+            polygonShape.setAsBox(0.5f, 0.5f);
 
             FixtureDef fixtureDef = new FixtureDef();
             fixtureDef.shape = polygonShape;
-            fixtureDef.density = 0.5f;
-            fixtureDef.friction = 0.4f;
+            fixtureDef.density = 0.0f;
+            fixtureDef.friction = 0.0f;
+            fixtureDef.restitution = 0.0f;
 
             body.createFixture(fixtureDef);
+            body.setLinearDamping(1);
+            body.setFixedRotation(true);
+            body.setGravityScale(0);
+            body.setBullet(true);
 
             polygonShape.dispose();
 
@@ -132,7 +147,6 @@ public class PhysicSystem extends IteratingSystem {
     }
 
     public void applyImpulse(Body body, Vector2 dir) {
-        dir.scl(3000);
         body.applyLinearImpulse(dir, body.getWorldCenter(), true);
     }
 
@@ -145,7 +159,7 @@ public class PhysicSystem extends IteratingSystem {
     private void createWorld() {
         world = new World(new Vector2(0, 0), false);
         debugRenderer = new Box2DDebugRenderer();
-        createCircle(100, 500, new Vector2());
+        createCircle(100, 8, new Vector2());
         createHouses();
     }
 

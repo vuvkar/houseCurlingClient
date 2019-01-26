@@ -32,9 +32,9 @@ public class ShapeRenderingSystem extends IteratingSystem {
         super(Family.all(PositionComponent.class, ShapeComponent.class).get());
         this.houseCurling = houseCurling;
         this.batch = new SpriteBatch();
-        float aspect = Gdx.graphics.getWidth() / Gdx.graphics.getHeight();
+        float aspect = (float) Gdx.graphics.getHeight() / Gdx.graphics.getWidth();
 
-        this.camera = new OrthographicCamera(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT * aspect);
+        this.camera = new OrthographicCamera(Constants.WORLD_WIDTH, Constants.WORLD_WIDTH * aspect);
         this.shapeRenderer = new ShapeRenderer();
 
         camera.position.set(0,0,0);
