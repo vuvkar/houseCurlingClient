@@ -50,7 +50,7 @@ public class PhysicSystem extends IteratingSystem {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setProjectionMatrix(houseCurling.renderingSystem.camera.combined);
         shapeRenderer.setColor(Color.BLUE);
-        shapeRenderer.circle(0, 0, Constants.CIRCLE_INITIAL_RADIUS, 100);
+        shapeRenderer.circle(0, 0, radius, 100);
         shapeRenderer.end();
         if(countStep < Constants.BOT_SYSTEM_FRAMESTEP) {
             botsSystem.botsAction();
@@ -62,7 +62,7 @@ public class PhysicSystem extends IteratingSystem {
     private void checkForPlaces() {
         for(Body house: houses) {
             Vector2 position = house.getWorldCenter();
-            if(Math.pow(position.x, 2) + Math.pow(position.y, 2) > radius) {
+            if(Math.pow(position.x, 2) + Math.pow(position.y, 2) > Math.pow(radius, 2)) {
                 deleteHouse(house);
             }
         }
@@ -119,8 +119,8 @@ public class PhysicSystem extends IteratingSystem {
     }
 
     private void changeRadius() {
-        float delta = Constants.HOUSE_COUNT / Constants.CIRCLE_INITIAL_RADIUS;
-        //radius -= delta;
+        float delta = Constants.CIRCLE_INITIAL_RADIUS / Constants.HOUSE_COUNT;
+        radius -= delta;
     }
 
     private Vector2[] createCirclePoints( int n , float r , Vector2 centerCoordinate) {
