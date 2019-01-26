@@ -4,6 +4,8 @@ public class Constants {
     public static int SCREEN_HEIGHT = 900;
     public static int SCREEN_WIDTH = 1600;
 
+    public static float UI_SCALE = 1920f / SCREEN_WIDTH ;
+
     public static int WORLD_WIDTH = 5;
     public static int WORLD_HEIGHT = 1080;
 
