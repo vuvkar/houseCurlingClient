@@ -68,7 +68,7 @@ public class PhysicSystem extends IteratingSystem {
 
         Gdx.gl.glDisable(GL20.GL_BLEND);
         if(countStep < Constants.BOT_SYSTEM_FRAMESTEP) {
-            botsSystem.botsAction();
+           // botsSystem.botsAction();
         } else {
             countStep = 0;
         }
@@ -152,9 +152,9 @@ public class PhysicSystem extends IteratingSystem {
             bodyDef.type = BodyDef.BodyType.DynamicBody;
             float randx = MathUtils.random(-3 * HOUSE_SIZE, 3 * HOUSE_SIZE);
             float randy = MathUtils.random(-3 * HOUSE_SIZE, 3 * HOUSE_SIZE);
-            for ( int j =0; j < i; j++ )
+            for ( int j = 0; j < i; j++ )
             {
-                if ( randx == houses[i].getPosition().x && randy == houses[i].getPosition().y )
+                if ( randx == houses.get(j).getPosition().x && randy == houses.get(j).getPosition().y )
                 {
                     randx = MathUtils.random(-3 * HOUSE_SIZE, 3 * HOUSE_SIZE);
                     randy = MathUtils.random(-3 * HOUSE_SIZE, 3 * HOUSE_SIZE);
@@ -182,10 +182,10 @@ public class PhysicSystem extends IteratingSystem {
     }
 
     public void applyImpulse(Body body, Vector2 dir) {
-        if ( Vector2.Distance( dir , body.getWorldCenter() ) >  MAX_VECTOR_LENGTH )
-        {
-            
-        }
+//        if ( Vector2.dst( dir , body.getWorldCenter() ) >  Constants.MAX_VECTOR_LENGTH )
+//        {
+//
+//        }
         body.applyLinearImpulse( dir, body.getWorldCenter(), true);
     }
 

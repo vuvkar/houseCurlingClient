@@ -35,18 +35,15 @@ public class BotHouse {
             probas[i] = Math.exp(inSecurity(enemyRNorms.get(i).getRNorm())) / res.x;
 
         res.y = randomWeightedChoice(probas);
-<<<<<<< HEAD
         res.x = (float) probas[(int) res.y];
 
         System.out.print("Attack Prior" + res + "\t");
-=======
         try {
             res.x = (float) probas[(int) res.y];
         }
         catch (Exception e) {
             e.printStackTrace();
         }
->>>>>>> 1cb66f3bf97ef5752faeecef7173be1d59b8da50
         this.attackPrior = res;
         return res;
     }
