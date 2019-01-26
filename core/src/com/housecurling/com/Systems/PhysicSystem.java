@@ -15,6 +15,7 @@ import com.housecurling.com.Entities.GameEntity;
 import com.housecurling.com.Enums.GameObject;
 import com.housecurling.com.Enums.GameShape;
 import com.housecurling.com.HouseCurling;
+import java.lang.*;
 
 public class PhysicSystem extends IteratingSystem {
     private final HouseCurling houseCurling;
@@ -69,7 +70,9 @@ public class PhysicSystem extends IteratingSystem {
        // PolygonRegion =
 
         PolygonShape polygonShape = new PolygonShape();
-       // polygonShape.set();
+        
+
+        polygonShape.set( createCirclePoints( lineNumber , 50 ) );
         polygonShape.setRadius(50);
 
         FixtureDef fixtureDef = new FixtureDef();
@@ -81,6 +84,20 @@ public class PhysicSystem extends IteratingSystem {
         Fixture fixture = body.createFixture(fixtureDef);
 
         polygonShape.dispose();
+    }
+
+    private Vector2[] createCirclePoints( int n , int r ) {
+        Vector2[] vertexes = new Vector2[n];
+        double coef = 1;
+        for ( int i=0; i < n ; i++ )
+        {
+            double radian = coef * Math.PI * 2;
+            double x = r + Math.cos(radian) * r;
+            double y = r + Math.sin(radian) * r;
+            vertexes[i] = new Vector2( x , y );
+            coef -= 1/n;
+        }
+        return vertexes;
     }
 
     private void createHouses() {
