@@ -45,7 +45,8 @@ public class BotsSystem {
         for(BotHouse botHouse : bots) {
             temp.clear();
             try {
-                System.arraycopy(temp, 0, bots, 0, bots.size);
+                temp.addAll(bots);
+                // System.arraycopy(temp, 0, bots, 0, bots.size);
             }
             catch (Exception e) {
                 e.printStackTrace();

@@ -148,7 +148,7 @@ public class PhysicSystem extends IteratingSystem {
 
             polygonShape.dispose();
 
-            //botsSystem.addBot(body);
+            botsSystem.addBot(body);
             this.houses.add(body);
         }
     }

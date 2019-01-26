@@ -2,6 +2,7 @@ package com.housecurling.com.Systems;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.housecurling.com.Constants;
 import com.badlogic.gdx.utils.Array;
 
 import java.util.HashMap;
@@ -27,11 +28,16 @@ public class BotHouse {
         Vector2 res = new Vector2(0, 0);
         for (int i = 0; i < enemyRNorms.size; i++)
             res.x += Math.exp(inSecurity(enemyRNorms.get(i).getRNorm()));
+
         double[] probas = new double[enemyRNorms.size];
+
         for (int i = 0; i < probas.length; i++)
             probas[i] = Math.exp(inSecurity(enemyRNorms.get(i).getRNorm())) / res.x;
+
         res.y = randomWeightedChoice(probas);
         res.x = (float) probas[(int) res.y];
+
+        System.out.print("Attack Prior" + res + "\t");
         this.attackPrior = res;
         return res;
     }
@@ -45,11 +51,13 @@ public class BotHouse {
     }
 
     public float getRNorm() {
-        return body.getPosition().len();
+        return body.getPosition().len()/ Constants.CIRCLE_INITIAL_RADIUS;
     }
 
     public float protectPrior() {
-        return sigmoid(inSecurity(getRNorm()));
+        float res = sigmoid(inSecurity(getRNorm()));
+        System.out.print("Protect Prior: " + res + "\n");
+        return res;
     }
 
     public int randomWeightedChoice(double[] arr) {
@@ -64,7 +72,7 @@ public class BotHouse {
     }
 
     private float inSecurity(float security) {
-        return 1f / security;
+        return 1f / (float)Math.pow(4, security+1f);
     }
 
     public void setEnemyRNorms(Array<BotHouse> enemyRNorms) {
