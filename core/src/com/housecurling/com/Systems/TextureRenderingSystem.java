@@ -42,7 +42,7 @@ public class TextureRenderingSystem {
         float scl2 = Constants.UI_SCALE * camera.viewportWidth /Constants.SCREEN_WIDTH;
 
         for(Body body: houses) {
-            batch.draw(house, body.getPosition().x - Constants.HOUSE_SIZE / 2, body.getPosition().y - Constants.HOUSE_SIZE / 2, 0, 0, house.getWidth(), house.getHeight(), scl2, scl2, 0);
+         //   batch.draw(house, body.getPosition().x - Constants.HOUSE_SIZE / 2, body.getPosition().y - Constants.HOUSE_SIZE / 2, 0, 0, house.getWidth(), house.getHeight(), scl2, scl2, 0);
         }
 
         batch.end();

@@ -25,19 +25,21 @@ public class BotsSystem {
         Vector2 ap = bot.attackPrior();
         float protect = bot.protectPrior();
 
-        int choice = bot.randomWeightedChoice(new double[] {ap.x, protect});
+        Array<Float> zibil = new Array<Float>();
+        zibil.add(ap.x, protect);
+        int choice = bot.randomWeightedChoice(zibil);
         if(choice == 0){
-           BotHouse  botHouse = bot.getEnemyRNorms().get((int)ap.y);
+           BotHouse  botHouse = bot.getrNorms().get((int)ap.y);
            tempVector.set(botHouse.body.getPosition());
            tempVector.sub(bot.body.getPosition());
            tempVector.nor().scl(Constants.MAX_VECTOR_LENGTH * ap.x);
-           physicSystem.applyImpulse(bot.body, tempVector);
+           physicSystem.applyImpulse(bot.body, tempVector.scl(0.01f));
         }
         else{
             tempVector.set(bot.body.getPosition());
             tempVector.scl(-1);
             tempVector.nor().scl(Constants.MAX_VECTOR_LENGTH * protect);
-            physicSystem.applyImpulse(bot.body, tempVector);
+            physicSystem.applyImpulse(bot.body, tempVector.scl(0.001f));
         }
     }
 
@@ -45,15 +47,15 @@ public class BotsSystem {
         for(BotHouse botHouse : bots) {
             temp.clear();
             temp.addAll(bots);
-            temp.removeValue(botHouse, true);
-            botHouse.setEnemyRNorms(temp);
+//            temp.removeValue(botHouse, true);
+            botHouse.setrNorms(temp);
         }
 
         for(BotHouse botHouse: bots) {
-            decide(botHouse);
+//            decide(botHouse);
+            botHouse.botAction();
         }
     }
-
 
     public void addBot(Body bot) {
         BotHouse botHouse = new BotHouse(bot);
@@ -61,7 +63,11 @@ public class BotsSystem {
     }
 
     public void removeBot(Body bot) {
-
+        BotHouse botHouse = null;
+        for(BotHouse house:bots)
+            if(house.body == bot)
+                botHouse = house;
+        bots.removeValue(botHouse,true);
     }
 
 }

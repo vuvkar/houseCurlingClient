@@ -57,7 +57,7 @@ public class PhysicSystem extends IteratingSystem {
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl20.glLineWidth(5);
 
-        //debugRenderer.render(world, houseCurling.camera.combined);
+        debugRenderer.render(world, houseCurling.camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setProjectionMatrix(houseCurling.camera.combined);
         shapeRenderer.setColor(0.7f, 0.5f, 0, 0.8f);
@@ -69,11 +69,11 @@ public class PhysicSystem extends IteratingSystem {
         shapeRenderer.end();
 
         Gdx.gl.glDisable(GL20.GL_BLEND);
-        if(countStep < Constants.BOT_SYSTEM_FRAMESTEP) {
-           // botsSystem.botsAction();
-        } else {
-            countStep = 0;
-        }
+        if(countStep % Constants.BOT_SYSTEM_FRAMESTEP == 0) {
+           botsSystem.botsAction();
+    }
+        countStep++;
+        countStep %= Constants.BOT_SYSTEM_FRAMESTEP;
     }
 
     private void checkForPlaces() {
@@ -164,17 +164,16 @@ public class PhysicSystem extends IteratingSystem {
 
             Body body = world.createBody(bodyDef);
 
-
             PolygonShape polygonShape = new PolygonShape();
             polygonShape.setAsBox(HOUSE_SIZE / 2, HOUSE_SIZE / 2);
 
             FixtureDef fixtureDef = new FixtureDef();
             fixtureDef.shape = polygonShape;
-            fixtureDef.density = 8f;
+            fixtureDef.density = 5f;
+            fixtureDef.restitution = 1f;
 
             body.createFixture(fixtureDef);
-            body.setLinearDamping(1f);
-
+            body.setLinearDamping(.6f);
 
             polygonShape.dispose();
 
@@ -187,27 +186,8 @@ public class PhysicSystem extends IteratingSystem {
     public void applyImpulse(Body body, Vector2 dir) {
         if ( dir.dst( body.getWorldCenter() ) > Constants.MAX_VECTOR_LENGTH )
         {
-            double k1 ,k2;
-            Vector2 temp = body.getWorldCenter();
-            k1 = ((2 * dir.x * temp.x -2 * dir.y * temp.y) + Math.sqrt( Math.pow(2 * dir.x * temp.x + 2 * dir.y * temp.y , 2) - 
-                 4 * (Math.pow( temp.x , 2 )) + Math.pow( dir.y , 2 )) * (Math.pow( dir.x , 2 ) + Math.pow( temp.y ,2) - Math.pow( temp.x , 2 )))
-                 /2 * (Math.pow( temp.x , 2 ) + Math.pow( dir.y , 2 )) * (Math.pow( dir.x , 2 ) + Math.pow( temp.y ,2) - Math.pow( temp.x , 2 ));
-
-            k2 = ((2 * dir.x * temp.x -2 * dir.y * temp.y) - Math.sqrt( Math.pow(2 * dir.x * temp.x + 2 * dir.y * temp.y , 2) - 
-                 4 * (Math.pow( temp.x , 2 )) + Math.pow( dir.y , 2 )) * (Math.pow( dir.x , 2 ) + Math.pow( temp.y ,2) - Math.pow( temp.x , 2 )))
-                 /2 * (Math.pow( temp.x , 2 ) + Math.pow( dir.y , 2 )) * (Math.pow( dir.x , 2 ) + Math.pow( temp.y ,2) - Math.pow( temp.x , 2 )); 
-
-            if ( k1 > 0 )
-            {
-                temp.x = (int)(k1 * temp.x);
-                temp.y = (int)(k1 * temp.y);
-            }
-            else
-            {
-                temp.x = (int)(k2 * temp.x);
-                temp.y = (int)(k2 * temp.y);
-            }  
-            body.applyLinearImpulse( dir, temp , true);   
+            dir.scl(Constants.MAX_VECTOR_LENGTH / dir.len());
+            body.applyLinearImpulse( dir, body.getWorldCenter(), true);
         }
         else
         {
