@@ -52,6 +52,11 @@ public class PhysicSystem extends IteratingSystem {
         checkForPlaces();
         float circleDelta = deltaTime / Constants.GAME_TIMEOUT;
         radius -= circleDelta;
+        if ( radius < 0)
+        {
+            radius = 0 ;
+        }
+        float temp = Constants.CIRCLE_INITIAL_RADIUS / 3;
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
@@ -60,7 +65,21 @@ public class PhysicSystem extends IteratingSystem {
         debugRenderer.render(world, houseCurling.camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setProjectionMatrix(houseCurling.camera.combined);
-        shapeRenderer.setColor(0.7f, 0.5f, 0, 0.8f);
+            if( radius < 3 * temp && radius > 2 * temp )
+        {
+            shapeRenderer.setColor(0.7f, 0.9f, 0, 0.8f);
+        }
+        else
+        {
+            if ( radius > temp && radius < 2 * temp )
+            {
+                shapeRenderer.setColor(0.7f, 0.5f, 0, 0.8f);
+            }
+            else
+            {
+                shapeRenderer.setColor(0.7f, 0.2f, 0, 0.8f);
+            }
+        }
         shapeRenderer.circle(0, 0, radius, 100);
 
         shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
@@ -134,6 +153,7 @@ public class PhysicSystem extends IteratingSystem {
     private Vector2[] createCirclePoints( int n , float r , Vector2 centerCoordinate) {
         Vector2[] vertexes = new Vector2[n];
         double coef = 1;
+
         for ( int i=0; i < n ; i++ )
         {
             double radian = coef * Math.PI * 2;
