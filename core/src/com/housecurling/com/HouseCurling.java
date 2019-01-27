@@ -13,6 +13,7 @@ import com.housecurling.com.Systems.InputSystem;
 import com.housecurling.com.Systems.PhysicSystem;
 import com.housecurling.com.Systems.ShapeRenderingSystem;
 import com.housecurling.com.Systems.TextureRenderingSystem;
+import com.housecurling.com.Ui.*;
 
 public class HouseCurling extends ApplicationAdapter { ;
 
@@ -25,23 +26,29 @@ public class HouseCurling extends ApplicationAdapter { ;
 
 	public SpriteBatch batch;
 	public Camera camera;
+	
+	public GameOver over;
+	public MainMenu menu;
 
 	@Override
 	public void create () {
 		float aspect = (float) Gdx.graphics.getHeight() / Gdx.graphics.getWidth();
 		this.camera = new OrthographicCamera(Constants.WORLD_WIDTH, Constants.WORLD_WIDTH * aspect);
 		this.batch = new SpriteBatch();
-
 		batch.setProjectionMatrix(camera.combined);
-
 		engine = new Engine();
 		physicSystem = new PhysicSystem(this);
+		this.menu = new MainMenu(this);
+		this.over = new GameOver(this);
 		engine.addSystem(physicSystem);
 		renderingSystem = new ShapeRenderingSystem(this);
 		engine.addSystem(renderingSystem);
 		inputSystem = new InputSystem(this);
 		textureRenderingSystem = new TextureRenderingSystem(this);
 		Gdx.input.setInputProcessor(inputSystem);
+
+		over.show();
+		menu.show();
 	}
 
 	@Override
@@ -50,8 +57,21 @@ public class HouseCurling extends ApplicationAdapter { ;
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		textureRenderingSystem.drawBackground();
-		engine.update(Gdx.graphics.getDeltaTime());
-		textureRenderingSystem.drawHouses();
+		switch(physicSystem.state){
+			case 0:
+				menu.render(Gdx.graphics.getDeltaTime());
+				break;
+			case 1:
+				engine.update(Gdx.graphics.getDeltaTime());
+				textureRenderingSystem.drawHouses();
+				break;
+			case 2:
+			case 3:
+				over.render(Gdx.graphics.getDeltaTime() );
+				break;
+		}
+
+		
 	}
 	
 	@Override

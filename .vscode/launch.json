@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - DesktopLauncher",
+            "request": "launch",
+            "mainClass": "com.housecurling.com.desktop.DesktopLauncher",
+            "projectName": "HouseCurling-desktop"
+        }
+    ]
+}

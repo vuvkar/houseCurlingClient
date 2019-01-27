@@ -20,6 +20,8 @@ import java.lang.*;
 import static com.housecurling.com.Constants.HOUSE_SIZE;
 
 public class PhysicSystem extends IteratingSystem {
+    public int state = 0;
+
     private final HouseCurling houseCurling;
     private ComponentMapper<PositionComponent> pm = ComponentMapper.getFor(PositionComponent.class);
     private ComponentMapper<VelocityComponent> vm = ComponentMapper.getFor(VelocityComponent.class);
@@ -52,7 +54,7 @@ public class PhysicSystem extends IteratingSystem {
         checkForPlaces();
         float circleDelta = deltaTime / Constants.GAME_TIMEOUT;
         radius -= circleDelta;
-        if ( radius < 0)
+        if ( radius < 0 || houses.size == 1) 
         {
             radius = 0 ;
         }
@@ -99,8 +101,16 @@ public class PhysicSystem extends IteratingSystem {
         for(Body house: houses) {
             Vector2 position = house.getWorldCenter();
             if(Math.pow(position.x, 2) + Math.pow(position.y, 2) > Math.pow(radius, 2)) {
+                if ( userHouse == house )
+                {
+                    if ( state != 2)
+                        state = 3;
+                }
                 deleteHouse(house);
             }
+        }
+        if ( houses.size == 1 && userHouse == houses.get(0) ){
+            state = 2;
         }
     }
 
