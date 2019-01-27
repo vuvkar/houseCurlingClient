@@ -9,10 +9,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.housecurling.com.Network.CurlingNetwork;
-import com.housecurling.com.Systems.InputSystem;
-import com.housecurling.com.Systems.PhysicSystem;
-import com.housecurling.com.Systems.ShapeRenderingSystem;
-import com.housecurling.com.Systems.TextureRenderingSystem;
+import com.housecurling.com.Systems.*;
 
 public class HouseCurling extends ApplicationAdapter { ;
 
@@ -22,6 +19,7 @@ public class HouseCurling extends ApplicationAdapter { ;
 	public PhysicSystem physicSystem;
 	public InputSystem inputSystem;
 	public TextureRenderingSystem textureRenderingSystem;
+	public InGameUI inGameUI;
 
 	public SpriteBatch batch;
 	public Camera camera;
@@ -41,6 +39,7 @@ public class HouseCurling extends ApplicationAdapter { ;
 		engine.addSystem(renderingSystem);
 		inputSystem = new InputSystem(this);
 		textureRenderingSystem = new TextureRenderingSystem(this);
+		inGameUI = new InGameUI(this);
 		Gdx.input.setInputProcessor(inputSystem);
 	}
 
@@ -49,9 +48,16 @@ public class HouseCurling extends ApplicationAdapter { ;
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+		batch.begin();
 		textureRenderingSystem.drawBackground();
+		batch.end();
 		engine.update(Gdx.graphics.getDeltaTime());
+		batch.begin();
 		textureRenderingSystem.drawHouses();
+		textureRenderingSystem.drawArrow();
+		batch.end();
+		inGameUI.act();
+		inGameUI.draw();
 	}
 	
 	@Override

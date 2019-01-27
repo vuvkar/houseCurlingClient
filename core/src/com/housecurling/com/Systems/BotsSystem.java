@@ -63,11 +63,12 @@ public class BotsSystem {
     }
 
     public void removeBot(Body bot) {
-        BotHouse botHouse = null;
-        for(BotHouse house:bots)
-            if(house.body == bot)
-                botHouse = house;
-        bots.removeValue(botHouse,true);
+        for(BotHouse house:bots) {
+            if (house.body.equals(bot)) {
+                bots.removeValue(house, true);
+                break;
+            }
+        }
     }
 
 }

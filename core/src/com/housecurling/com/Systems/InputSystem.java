@@ -26,12 +26,17 @@ public class InputSystem extends InputAdapter {
         temp.set(screenX, screenY, 0);
         camera.unproject(temp);
         initialPosition.set(temp.x, temp.y);
+//        houseCurling.inGameUI.arrowWidget.target.set(temp.x, temp.y);
+     //   houseCurling.textureRenderingSystem.isVisible = true;
         return super.touchDown(screenX, screenY, pointer, button);
     }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
         wasDragged = true;
+        temp.set(screenX, screenY, 0);
+        camera.unproject(temp);
+     //   houseCurling.inGameUI.arrowWidget.target.set(temp.x, temp.y);
         return super.touchDragged(screenX, screenY, pointer);
     }
 
@@ -40,7 +45,8 @@ public class InputSystem extends InputAdapter {
         if(wasDragged) {
             temp.set(screenX, screenY, 0);
             camera.unproject(temp);
-
+         //   houseCurling.inGameUI.arrowWidget.target.set(temp.x, temp.y);
+          //  houseCurling.textureRenderingSystem.isVisible = false;
             houseCurling.physicSystem.wasDragged(new Vector2(initialPosition.x, initialPosition.y), new Vector2(temp.x, temp.y));
         }
         return super.touchUp(screenX, screenY, pointer, button);

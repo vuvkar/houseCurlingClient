@@ -213,6 +213,7 @@ public class PhysicSystem extends IteratingSystem {
 
             body.createFixture(fixtureDef);
             body.setLinearDamping(.6f);
+            body.setAngularDamping(2);
 
             polygonShape.dispose();
 

@@ -85,7 +85,7 @@ public class BotHouse {
     }
 
     private float inSecurity(float security) {
-        return 1f / ((float)Math.pow(1, security) + 0.005f);
+        return 1f / ((float)Math.pow(1, security) + 0.05f);
     }
 
     public void botAction() {
@@ -106,18 +106,24 @@ public class BotHouse {
 
         for(int id_el = 0; id_el < vuln.size; id_el++) {
             int id_of = randomWeightedChoice(probs);
-            if(probs.get(id_of) > Constants.STOCHASTICITY) {
-                if(id_el == id_of) {
-                    body.applyLinearImpulse(body.getPosition().nor().scl(-Constants.DIVERGENCE), body.getWorldCenter(), true);
-                }
-                else {
-                    Vector2 distance = rNorms.get(id_of).body.getPosition().sub(rNorms.get(id_el).body.getPosition());
-                    body.applyLinearImpulse(distance.nor().scl(Constants.DIVERGENCE), body.getWorldCenter(), true);;
+            try {
+                if (id_of < probs.size && id_of >= 0) {
+                    if (probs.get(id_of) > Constants.STOCHASTICITY) {
+                        if (id_el == id_of) {
+                            body.applyLinearImpulse(body.getPosition().nor().scl(-Constants.DIVERGENCE), body.getWorldCenter(), true);
+                        } else {
+                            Vector2 distance = rNorms.get(id_of).body.getPosition().sub(rNorms.get(id_el).body.getPosition());
+                            body.applyLinearImpulse(distance.nor().scl(Constants.DIVERGENCE), body.getWorldCenter(), true);
+                            ;
+                        }
+                    } else {
+                        Vector2 stoch = new Vector2(MathUtils.random(0f, 1f), MathUtils.random(0f, 1f));
+                        body.applyLinearImpulse(stoch.nor().scl(Constants.DIVERGENCE), body.getWorldCenter(), true);
+                    }
                 }
             }
-            else {
-                Vector2 stoch = new Vector2(MathUtils.random(0f, 1f), MathUtils.random(0f, 1f));
-                body.applyLinearImpulse(stoch.nor().scl(Constants.DIVERGENCE), body.getWorldCenter(), true);
+            catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
