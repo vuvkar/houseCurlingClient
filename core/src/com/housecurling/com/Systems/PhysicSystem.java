@@ -99,11 +99,30 @@ public class PhysicSystem extends IteratingSystem {
         for(Body house: houses) {
             Vector2 position = house.getWorldCenter();
             if(Math.pow(position.x, 2) + Math.pow(position.y, 2) > Math.pow(radius, 2)) {
-                deleteHouse(house);
+                if ( house == userHouse )
+                {
+                    gameLost();
+                }
+                else
+                {
+                    deleteHouse(house);
+                }
+            }
+            if ( houses.size == 1)
+            {
+                gameWin();
             }
         }
     }
 
+    private void gameLost() {
+
+    }
+
+
+    private void gameWin() {
+
+    }
     private void deleteHouse(Body house) {
         world.destroyBody(house);
         botsSystem.removeBot(house);
