@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.Array;
 import com.housecurling.com.Constants;
@@ -42,7 +43,13 @@ public class TextureRenderingSystem {
         float scl2 = Constants.UI_SCALE * camera.viewportWidth /Constants.SCREEN_WIDTH;
 
         for(Body body: houses) {
-         //   batch.draw(house, body.getPosition().x - Constants.HOUSE_SIZE / 2, body.getPosition().y - Constants.HOUSE_SIZE / 2, 0, 0, house.getWidth(), house.getHeight(), scl2, scl2, 0);
+            house.setOrigin(0,0);
+            house.setCenter(house.getWidth()/2, house.getHeight()/2);
+            Vector2 worldPoint = body.getWorldPoint(new Vector2(- Constants.HOUSE_SIZE / 2, - Constants.HOUSE_SIZE / 2));
+            house.setPosition(worldPoint.x, worldPoint.y);
+            house.setRotation((float)Math.toDegrees(body.getAngle()));
+            house.setScale(scl2);
+            house.draw(batch);
         }
 
         batch.end();
